@@ -110,7 +110,6 @@ class Tree {
   }
 
   find(value) {
-    const tempRoot = this.root;
     function traverse(value, root) {
       if (root === null) {
         return false;
@@ -123,7 +122,7 @@ class Tree {
         return true;
       }
     }
-    return traverse(value, tempRoot);
+    return traverse(value, this.root);
   }
 
   leverOrderIteration(callback) {
@@ -132,11 +131,7 @@ class Tree {
     }
     const queue = [];
     function traverse(callback, root) {
-      if (root === null) {
-        return;
-      }
       queue.push(root);
-
       while (queue.length !== 0) {
         let current = queue[0];
         current.data = callback(current.data);
@@ -165,14 +160,71 @@ class Tree {
       let current = queue[0];
       current.data = callback(current.data);
       queue.shift();
-      if (current.left !== null) {
-        traverse(callback, current.left);
-      }
-      if (current.right !== null) {
-        traverse(callback, current.right);
-      }
+      traverse(callback, current.left);
+      traverse(callback, current.right);
     }
     traverse(callback, this.root);
+  }
+
+  preOrder(callback) {
+    if (typeof callback !== "function") {
+      throw new Error("not a function");
+    }
+    function traverse(callback, root) {
+      if (root === null) {
+        return;
+      }
+      root.data = callback(root.data);
+      traverse(callback, root.left);
+      traverse(callback, root.right);
+    }
+    traverse(callback, this.root);
+  }
+
+  inOrder(callback) {
+    if (typeof callback !== "function") {
+      throw new Error("not a function");
+    }
+    function traverse(callback, root) {
+      if (root === null) {
+        return;
+      }
+      traverse(callback, root.left);
+      root.data = callback(root.data);
+      traverse(callback, root.right);
+    }
+    traverse(callback, this.root);
+  }
+
+  postOrder(callback) {
+    if (typeof callback !== "function") {
+      throw new Error("not a function");
+    }
+    function traverse(callback, root) {
+      if (root === null) {
+        return;
+      }
+      traverse(callback, root.left);
+      traverse(callback, root.right);
+      root.data = callback(root.data);
+    }
+    traverse(callback, this.root);
+  }
+
+  height(node) {
+    function traverse(value, root) {
+      if (root === null) {
+        return false;
+      }
+      if (value < root.data) {
+        return traverse(value, root.left);
+      } else if (value > root.data) {
+        return traverse(value, root.right);
+      } else {
+        return true;
+      }
+    }
+    return traverse(value, this.root);
   }
 }
 
@@ -187,4 +239,6 @@ console.log(BST.find(4));
 BST.leverOrderIteration(testCallback);
 BST.prettyPrint(BST.getRootValue());
 BST.leverOrderRecursion(testCallback);
+BST.prettyPrint(BST.getRootValue());
+BST.preOrder(testCallback);
 BST.prettyPrint(BST.getRootValue());
