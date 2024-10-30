@@ -10,7 +10,6 @@ class Tree {
   constructor(arr) {
     this.arr = this.sortArray(arr);
     this.root = this.buildTree(this.arr);
-    // this.prettyPrint(this.root);
   }
 
   prettyPrint(node, prefix = "", isLeft = true) {
@@ -229,41 +228,66 @@ class Tree {
   isBalanced() {
     let boolean = true;
     this.leverOrderIteration((node) => {
-        let difference = this.height(node.left) - this.height(node.right);
-        if (difference > 1 || difference < -1) {
-            return boolean = false;;
-          }
-    })
+      let difference = this.height(node.left) - this.height(node.right);
+      if (difference > 1 || difference < -1) {
+        return (boolean = false);
+      }
+    });
     return boolean;
+  }
+
+  reBalance() {
+    if (!this.isBalanced()) {
+      const newArray = [];
+      this.inOrder((node) => {
+        newArray.push(node.data);
+      });
+      this.arr = this.sortArray(newArray);
+      this.root = this.buildTree(this.arr);
+    }
   }
 
   getRootValue() {
     return this.root;
   }
   getNodeValue() {
-    return this.root.left.left.right.left;
+    return this.root.left.left;
   }
 }
 
 function testCallback(value) {
-  return value.data *= 2;
+  return (value.data *= 2);
+}
+
+function print(value) {
+    console.log(value.data)
 }
 
 const BST = new Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
 BST.insert(2);
 BST.delete(4);
 console.log(BST.find(4));
+BST.prettyPrint(BST.getRootValue());
 
 BST.leverOrderIteration(testCallback);
 BST.prettyPrint(BST.getRootValue());
 
 BST.leverOrderRecursion(testCallback);
-BST.prettyPrint(BST.getRootValue());
-
-BST.preOrder(testCallback);
 console.log(BST.height(BST.getRootValue()));
 console.log(BST.depth(BST.getNodeValue()));
 BST.prettyPrint(BST.getRootValue());
 
+console.log('preOrder')
+BST.preOrder(print);
+console.log('inOrder')
+BST.inOrder(print);
+console.log('postOrder')
+BST.postOrder(print);
+BST.prettyPrint(BST.getRootValue());
+
+console.log(BST.isBalanced());
+BST.prettyPrint(BST.getRootValue());
+
+BST.reBalance();
 console.log(BST.isBalanced());
 BST.prettyPrint(BST.getRootValue());
