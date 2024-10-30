@@ -56,10 +56,6 @@ class Tree {
     return root;
   }
 
-  getRootValue() {
-    return this.root;
-  }
-
   insert(value) {
     function traverse(value, root) {
       if (root === null) {
@@ -134,7 +130,7 @@ class Tree {
       queue.push(root);
       while (queue.length !== 0) {
         let current = queue[0];
-        current.data = callback(current.data);
+        callback(current);
         if (current.left !== null) {
           queue.push(current.left);
         }
@@ -158,7 +154,7 @@ class Tree {
       }
       queue.push(root);
       let current = queue[0];
-      current.data = callback(current.data);
+      callback(current);
       queue.shift();
       traverse(callback, current.left);
       traverse(callback, current.right);
@@ -174,7 +170,7 @@ class Tree {
       if (root === null) {
         return;
       }
-      root.data = callback(root.data);
+      callback(root);
       traverse(callback, root.left);
       traverse(callback, root.right);
     }
@@ -190,7 +186,7 @@ class Tree {
         return;
       }
       traverse(callback, root.left);
-      root.data = callback(root.data);
+      callback(root);
       traverse(callback, root.right);
     }
     traverse(callback, this.root);
@@ -206,39 +202,68 @@ class Tree {
       }
       traverse(callback, root.left);
       traverse(callback, root.right);
-      root.data = callback(root.data);
+      callback(root);
     }
     traverse(callback, this.root);
   }
 
   height(node) {
-    function traverse(value, root) {
-      if (root === null) {
-        return false;
+    function traverse(node) {
+      if (node === null) {
+        return -1;
       }
-      if (value < root.data) {
-        return traverse(value, root.left);
-      } else if (value > root.data) {
-        return traverse(value, root.right);
-      } else {
-        return true;
-      }
+      let countL = traverse(node.left);
+      let countR = traverse(node.right);
+      return countL > countR ? countL + 1 : countR + 1;
     }
-    return traverse(value, this.root);
+    return traverse(node);
+  }
+
+  depth(node) {
+    if (node === null) {
+      throw new Error("node not in tree");
+    }
+    return this.height(this.root) - this.height(node);
+  }
+
+  isBalanced() {
+    let boolean = true;
+    this.leverOrderIteration((node) => {
+        let difference = this.height(node.left) - this.height(node.right);
+        if (difference > 1 || difference < -1) {
+            return boolean = false;;
+          }
+    })
+    return boolean;
+  }
+
+  getRootValue() {
+    return this.root;
+  }
+  getNodeValue() {
+    return this.root.left.left.right.left;
   }
 }
 
 function testCallback(value) {
-  return value * 2;
+  return value.data *= 2;
 }
 
 const BST = new Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
 BST.insert(2);
 BST.delete(4);
 console.log(BST.find(4));
+
 BST.leverOrderIteration(testCallback);
 BST.prettyPrint(BST.getRootValue());
+
 BST.leverOrderRecursion(testCallback);
 BST.prettyPrint(BST.getRootValue());
+
 BST.preOrder(testCallback);
+console.log(BST.height(BST.getRootValue()));
+console.log(BST.depth(BST.getNodeValue()));
+BST.prettyPrint(BST.getRootValue());
+
+console.log(BST.isBalanced());
 BST.prettyPrint(BST.getRootValue());
